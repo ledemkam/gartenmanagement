@@ -1,6 +1,9 @@
 spring:
   application:
     name: gartenmanagement
+  output:
+    ansi:
+      enabled: ALWAYS
   profiles:
     active:
       - development
@@ -42,21 +45,20 @@ logging:
   level:
     root: INFO
     de0.backend.gartenmanagement: DEBUG
-    org.springframework: DEBUG
     org.springframework.web: DEBUG
-    org.springframework.data: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
   pattern:
-    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
+    console: '%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr([%thread]){blue} %clr(%-5level){highlight} %clr(%logger{36}){cyan} - %msg%n'
     file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
-  file:
-    name: logs/gartenmanagement.log
-    max-size: 10MB
-    max-history: 30
-  logback:
-    rollingpolicy:
-      max-file-size: 10MB
-      max-history: 30
+  include-application-group:
+
+
+springdoc:
+  default-produces-media-type: application/json
+  swagger-ui:
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
 
 
