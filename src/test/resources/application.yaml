@@ -1,28 +1,30 @@
 spring:
   application:
     name: gartenmanagement_test
-  profiles:
-    active:
-      - test
 
   main:
     allow-bean-definition-overriding: true
 
-  # Configuration de base de données H2
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: sa
     password:
+
   jpa:
     hibernate:
       ddl-auto: create-drop
     show-sql: false
+
   h2:
     console:
       enabled: false
 
-# Configuration logging for Testing (JUnit & Mockito)
+  # Fast tests on H2; Flyway is exercised in PostgreSQL integration tests.
+  flyway:
+    enabled: false
+
+
 logging:
   level:
     root: WARN
@@ -34,12 +36,9 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.mockito: INFO
   pattern:
-    console: '[%thread] %-5level %logger{36} - %msg%n'
-
+    console: "[%thread] %-5level %logger{36} - %msg%n"
 
 management:
   endpoints:
     access:
       default: none
-
-
