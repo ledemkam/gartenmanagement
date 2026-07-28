@@ -14,11 +14,15 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    show-sql: false
+    show-sql: true
 
-  h2:
-    console:
-      enabled: false
+
+
+    properties:
+      hibernate:
+        format_sql: true
+
+
 
   # Fast tests on H2; Flyway is exercised in PostgreSQL integration tests.
   flyway:
