@@ -27,15 +27,17 @@ jobs:
       - name: Make Maven wrapper executable
         run: chmod +x mvnw
 
-      - name: Build and run tests
+      - name: Build and run unit + integration tests
         run: ./mvnw -B verify
 
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: surefire-reports
-          path: target/surefire-reports
+          name: test-reports
+          path: |
+            target/surefire-reports
+            target/failsafe-reports
           if-no-files-found: warn
 
 
