@@ -5,6 +5,9 @@ import de0.backend.gartenmanagement.dtos.ProductDTOResponse;
 import de0.backend.gartenmanagement.entities.Product;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 public class ProductMapper implements EntityMapper<Product, ProductDTOResponse> {
 
@@ -43,10 +46,36 @@ public class ProductMapper implements EntityMapper<Product, ProductDTOResponse> 
     }
 
     /**
+     * convert list from entities into a list of DTOs
+     *
+     * @param entities the list of entities
+     * @return list of DTOs
+     */
+    @Override
+    public List<ProductDTOResponse> toDtoList(List<Product> entities) {
+        return entities.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Converts a list of DTOs into a list of entities.
+     *
+     * @param dtos the list of DTOs
+     * @return the list of entities
+     */
+    @Override
+    public List<Product> toEntityList(List<ProductDTOResponse> dtos) {
+        return dtos.stream()
+                .map(this::toEntity)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * convert createProductDTO to entity product
      *
      * @param createDto  the creation DTO
-     * @retrun  Product entity
+     * @return Product entity
      */
     public Product toEntityFromCreate(ProductDTORequest createDto) {
         if (createDto == null) {
