@@ -15,6 +15,9 @@ import de0.backend.gartenmanagement.services.catalog.ProductValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +37,12 @@ public class ProductServiceImp implements ProductService {
     private static final BigDecimal MAX_DISCOUNT = new BigDecimal("50");
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "allProducts", allEntries = true),
+            @CacheEvict(value = "productsByCategory", allEntries = true),
+            @CacheEvict(value = "outOfStock", allEntries = true),
+            @CacheEvict(value = "lowStock", allEntries = true)
+    })
     public void create(final ProductDTORequest request) {
         log.info("Create new product with name: {}", request.name());
         productValidator.checkProductAlreadyExistsByName(request.name());
@@ -44,6 +53,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "products", key = "#id")
     public ProductDTOResponse findById(final String id){
         log.debug("Fetching product with id: {}", id);
         Product product = findProductOrThrow(id);
@@ -51,6 +61,13 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "products", key = "#id"),
+            @CacheEvict(value = "allProducts", allEntries = true),
+            @CacheEvict(value = "productsByCategory", allEntries = true),
+            @CacheEvict(value = "outOfStock", allEntries = true),
+            @CacheEvict(value = "lowStock", allEntries = true)
+    })
     public void update(final String id, final ProductDTORequest request) {
         log.info("Updating product with id: {}", id);
         Product existingProduct = findProductOrThrow(id);
@@ -63,6 +80,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "allProducts", key = "#pageable.pageNumber + '_' + #pageable.pageSize")
     public PageResponse<ProductDTOResponse> findAll(final Pageable pageable) {
         log.debug("Fetching products with paging: page={}, size={}",
                 pageable.getPageNumber(),
@@ -72,6 +90,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "productsByCategory", key = "#category + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public PageResponse<ProductDTOResponse> findByCategory(final ProductCategory category,
                                                            final Pageable pageable) {
         log.debug("Fetching products by category {} with paging: page={}, size={}",
@@ -81,6 +100,13 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "products", key = "#id"),
+            @CacheEvict(value = "allProducts", allEntries = true),
+            @CacheEvict(value = "productsByCategory", allEntries = true),
+            @CacheEvict(value = "outOfStock", allEntries = true),
+            @CacheEvict(value = "lowStock", allEntries = true)
+    })
     public void delete(final String id) {
         log.info("Deleting product with id: {}", id);
         Product existingProduct = findProductOrThrow(id);
@@ -89,6 +115,13 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "products", key = "#id"),
+            @CacheEvict(value = "allProducts", allEntries = true),
+            @CacheEvict(value = "productsByCategory", allEntries = true),
+            @CacheEvict(value = "outOfStock", allEntries = true),
+            @CacheEvict(value = "lowStock", allEntries = true)
+    })
     public ProductDTOResponse adjustStock(final String id,
                                           final Integer quantity) {
         log.info("Adjusting stock for product with id: {}, quantity: {}", id, quantity);
@@ -119,6 +152,13 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "products", key = "#id"),
+            @CacheEvict(value = "allProducts", allEntries = true),
+            @CacheEvict(value = "productsByCategory", allEntries = true),
+            @CacheEvict(value = "outOfStock", allEntries = true),
+            @CacheEvict(value = "lowStock", allEntries = true)
+    })
     public ProductDTOResponse applyDiscount(final String id,
                                             final BigDecimal discountPercentage) {
         log.info("Applying discount for product with id: {}, discount percentage: {}", id, discountPercentage);
@@ -147,6 +187,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "outOfStock", key = "#pageable.pageNumber + '_' + #pageable.pageSize")
     public PageResponse<ProductDTOResponse> getOutOfStockProducts(final Pageable pageable) {
         log.debug("searching for out of stock products");
         return PageResponse.of(productRepository.findLowStockProducts(0, pageable)
@@ -154,6 +195,7 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "lowStock", key = "#threshold + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public PageResponse<ProductDTOResponse> getLowStockProducts(final Integer threshold,
                                                                 final Pageable pageable) {
         log.debug("searching with stock products");
