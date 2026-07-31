@@ -6,6 +6,7 @@ import de0.backend.gartenmanagement.dtos.ProductDTOResponse;
 import de0.backend.gartenmanagement.entities.Product;
 import de0.backend.gartenmanagement.entities.ProductCategory;
 import de0.backend.gartenmanagement.exceptions.InsufficientStockException;
+import de0.backend.gartenmanagement.exceptions.InvalidPriceException;
 import de0.backend.gartenmanagement.exceptions.ProductNotFoundException;
 import de0.backend.gartenmanagement.mapper.ProductMapper;
 import de0.backend.gartenmanagement.repository.ProductRepository;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @RequiredArgsConstructor
 @Service
@@ -87,7 +89,8 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
-    public ProductDTOResponse adjustStock(final String id, final Integer quantity) {
+    public ProductDTOResponse adjustStock(final String id,
+                                          final Integer quantity) {
         log.info("Adjusting stock for product with id: {}, quantity: {}", id, quantity);
         Product product = findProductOrThrow(id);
 
@@ -113,6 +116,49 @@ public class ProductServiceImp implements ProductService {
         log.info("Stock adjusted successfully for product with id {}: new stock = {}",
                 id, newStock);
         return productMapper.toDto(updatedProduct);
+    }
+
+    @Override
+    public ProductDTOResponse applyDiscount(final String id,
+                                            final BigDecimal discountPercentage) {
+        log.info("Applying discount for product with id: {}, discount percentage: {}", id, discountPercentage);
+
+        //validate discount percentage betwen 0 and 50%
+        if (discountPercentage.compareTo(BigDecimal.ZERO) < 0 ||
+                discountPercentage.compareTo(MAX_DISCOUNT) > 0) {
+            log.error("Invalid discount percentage: {}. Must be between 0 and 50.", discountPercentage);
+            throw new InvalidPriceException("Discount percentage must be between 0 and 50.");
+        }
+        Product product = findProductOrThrow(id);
+
+        BigDecimal originalPrice = product.getPrice();
+        BigDecimal discountMultiplier = BigDecimal.ONE.subtract(
+                discountPercentage.divide(new BigDecimal("100"), 4,
+                        RoundingMode.HALF_UP)
+        );
+        BigDecimal newPrice = originalPrice.multiply(discountMultiplier)
+                .setScale(2, RoundingMode.
+                        HALF_UP);
+        log.info("originalPrice: {}- New price: {}", originalPrice,
+                newPrice);
+        product.setPrice(newPrice);
+        Product updatedProduct = productRepository.save(product);
+        return productMapper.toDto(updatedProduct);
+    }
+
+    @Override
+    public PageResponse<ProductDTOResponse> getOutOfStockProducts(final Pageable pageable) {
+        log.debug("searching for out of stock products");
+        return PageResponse.of(productRepository.findLowStockProducts(0, pageable)
+                .map(productMapper::toDto));
+    }
+
+    @Override
+    public PageResponse<ProductDTOResponse> getLowStockProducts(final Integer threshold,
+                                                                final Pageable pageable) {
+        log.debug("searching with stock products");
+        return PageResponse.of(productRepository.findLowStockProducts(threshold, pageable)
+                .map(productMapper::toDto));
     }
 
     private Product findProductOrThrow(final String id) {

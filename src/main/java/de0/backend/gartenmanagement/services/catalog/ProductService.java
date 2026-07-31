@@ -15,8 +15,10 @@ public interface ProductService extends CrudServices<ProductDTORequest, ProductD
 
 	PageResponse<ProductDTOResponse> findByCategory(ProductCategory category, Pageable pageable);
 	ProductDTOResponse adjustStock(String id, Integer quantity);
-	ProductDTOResponse applyDiscount(Long id, BigDecimal discountPercentage);
-	List<ProductDTOResponse> getOutOfStockProducts();
-	List<ProductDTOResponse> getLowStockProducts(Integer threshold)
+
+	ProductDTOResponse applyDiscount(String id, BigDecimal discountPercentage);
+
+	PageResponse<ProductDTOResponse> getOutOfStockProducts(Pageable pageable);
+	PageResponse<ProductDTOResponse> getLowStockProducts(Integer threshold,Pageable pageable);
 
 }
