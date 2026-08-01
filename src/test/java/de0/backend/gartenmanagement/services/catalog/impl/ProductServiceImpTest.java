@@ -6,19 +6,24 @@ import de0.backend.gartenmanagement.entities.Product;
 import de0.backend.gartenmanagement.entities.ProductCategory;
 import de0.backend.gartenmanagement.mapper.ProductMapper;
 import de0.backend.gartenmanagement.repository.ProductRepository;
+import de0.backend.gartenmanagement.services.catalog.ProductValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
 @DisplayName("unit test for ProductServiceImp")
 class ProductServiceImpTest {
 
@@ -27,6 +32,9 @@ class ProductServiceImpTest {
 
     @Mock
     private ProductMapper productMapper;
+
+    @Mock
+    private ProductValidator productValidator;
 
 
     @InjectMocks
@@ -68,6 +76,22 @@ class ProductServiceImpTest {
     @Test
     @DisplayName("Create should product when not exist")
     void create_should_product_when_not_exist() {
+        //GIVEN
+        doNothing().when(productValidator).checkProductAlreadyExistsByName(requestDto.name());
+        doNothing().when(productValidator).validatePrice(requestDto.price());
+        when(productMapper.toEntityFromCreate(requestDto)).thenReturn(productEntity);
+        when(productRepository.save(productEntity)).thenReturn(productEntity);
+        when(productMapper.toDto(productEntity)).thenReturn(responseDto);
+
+        //WHEN
+        ProductDTOResponse result = service.create(requestDto);
+
+        //THEN
+        assertThat(result).isNotNull()
+                .hasFieldOrProperty("id")
+                .hasFieldOrPropertyWithValue("name", "rosamarin");
+        verify(productValidator).checkProductAlreadyExistsByName(requestDto.name());
+        verify(productValidator).validatePrice(requestDto.price());
     }
 
     @Test

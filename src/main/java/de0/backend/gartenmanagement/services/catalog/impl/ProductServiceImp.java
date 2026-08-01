@@ -43,13 +43,14 @@ public class ProductServiceImp implements ProductService {
             @CacheEvict(value = "outOfStock", allEntries = true),
             @CacheEvict(value = "lowStock", allEntries = true)
     })
-    public void create(final ProductDTORequest request) {
+    public ProductDTOResponse create(final ProductDTORequest request) {
         log.info("Create new product with name: {}", request.name());
         productValidator.checkProductAlreadyExistsByName(request.name());
         productValidator.validatePrice(request.price());
         final Product entity = productMapper.toEntityFromCreate(request);
         log.info("Saving product: {}", entity);
-        productRepository.save(entity);
+        Product savingProduct =  productRepository.save(entity);
+        return productMapper.toDto(savingProduct);
     }
 
     @Override
@@ -68,15 +69,15 @@ public class ProductServiceImp implements ProductService {
             @CacheEvict(value = "outOfStock", allEntries = true),
             @CacheEvict(value = "lowStock", allEntries = true)
     })
-    public void update(final String id, final ProductDTORequest request) {
+    public ProductDTOResponse update(final String id, final ProductDTORequest request) {
         log.info("Updating product with id: {}", id);
         Product existingProduct = findProductOrThrow(id);
         productValidator.validatePrice(request.price());
-         productMapper.updateEntityFromDto(request, existingProduct);
-         Product updaptingProduct = productRepository.save(existingProduct);
+        productMapper.updateEntityFromDto(request, existingProduct);
+        Product updaptingProduct = productRepository.save(existingProduct);
 
          log.info("Product with id {} updated successfully: {}", id, updaptingProduct);
-         productMapper.toDto(updaptingProduct);
+         return productMapper.toDto(updaptingProduct);
     }
 
     @Override

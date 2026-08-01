@@ -6,9 +6,9 @@ import org.springframework.data.domain.Pageable;
 public interface CrudServices<I, O, ID>{
 
         // I for request, O for response
-        void create(final I request);
+        O create(final I request);
 
-        void update(final ID id, final I request);
+        O update(final ID id, final I request);
 
         PageResponse<O> findAll(final Pageable pageable);
 
