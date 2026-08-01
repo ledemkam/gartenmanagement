@@ -4,6 +4,7 @@ import de0.backend.gartenmanagement.dtos.ProductDTORequest;
 import de0.backend.gartenmanagement.dtos.ProductDTOResponse;
 import de0.backend.gartenmanagement.entities.Product;
 import de0.backend.gartenmanagement.entities.ProductCategory;
+import de0.backend.gartenmanagement.exceptions.DuplicateProductException;
 import de0.backend.gartenmanagement.mapper.ProductMapper;
 import de0.backend.gartenmanagement.repository.ProductRepository;
 import de0.backend.gartenmanagement.services.catalog.ProductValidator;
@@ -19,7 +20,10 @@ import java.math.BigDecimal;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -92,6 +96,23 @@ class ProductServiceImpTest {
                 .hasFieldOrPropertyWithValue("name", "rosamarin");
         verify(productValidator).checkProductAlreadyExistsByName(requestDto.name());
         verify(productValidator).validatePrice(requestDto.price());
+    }
+
+    @Test
+    @DisplayName("Create should throw when product already exists")
+    void create_should_throw_when_product_already_exists() {
+        //GIVEN
+        doThrow(new DuplicateProductException(requestDto.name()))
+                .when(productValidator).checkProductAlreadyExistsByName(requestDto.name());
+
+        //WHEN / THEN
+        assertThatThrownBy(() -> service.create(requestDto))
+                .isInstanceOf(DuplicateProductException.class)
+                .hasMessage(requestDto.name());
+
+        verify(productValidator).checkProductAlreadyExistsByName(requestDto.name());
+        verify(productValidator, never()).validatePrice(requestDto.price());
+        verify(productRepository, never()).save(productEntity);
     }
 
     @Test
