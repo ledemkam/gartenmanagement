@@ -97,7 +97,7 @@ public class ProductMapper implements EntityMapper<Product, ProductDTOResponse> 
      * @param dto  the source DTO
      * @param entity: the entity to update
      */
-    public void  updateEntityFromDto(ProductDTOResponse dto, Product entity) {
+    public void  updateEntityFromDto(ProductDTORequest dto, Product entity) {
         if (dto == null || entity == null) {
             return;
         }
@@ -105,7 +105,6 @@ public class ProductMapper implements EntityMapper<Product, ProductDTOResponse> 
         entity.setDescription(dto.description());
         entity.setPrice(dto.price());
         entity.setCategory(dto.category());
-        entity.setActive(dto.active());
         entity.setStock(dto.stock());
     }
 }

@@ -108,15 +108,12 @@ class ProductMapperTest {
                 .creationDate(LocalDateTime.now().minusDays(10))
                 .build();
 
-        ProductDTOResponse updateDto = ProductDTOResponse.builder()
-                .id("1")
+        ProductDTORequest updateDto = ProductDTORequest.builder()
                 .name("Neu name")
                 .category(ProductCategory.TOOL)
                 .price(new BigDecimal("25.00"))
                 .stock(50)
                 .description("name update")
-                .active(true)
-                .creationDate(existingProduct.getCreationDate())
                 .build();
 
         LocalDateTime originalCreationDate = existingProduct.getCreationDate();

@@ -7,6 +7,9 @@ spring:
   profiles:
     active:
       - development
+  cache:
+    type: simple
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME:postgres}
@@ -54,7 +57,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,prometheus
+        include: health,info,prometheus,metrics
   endpoint:
     health:
       show-details: never
@@ -66,6 +69,8 @@ logging:
     de0.backend.gartenmanagement: DEBUG
     org.springframework.web: DEBUG
     org.hibernate.SQL: DEBUG
+    org.springframework.transaction: DEBUG
+    org.springframework.cache: TRACE
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
   pattern:
     console: '%clr(%d{yyyy-MM-dd HH:mm:ss}){faint} %clr([%thread]){blue} %clr(%-5level){highlight} %clr(%logger{36}){cyan} - %msg%n'
