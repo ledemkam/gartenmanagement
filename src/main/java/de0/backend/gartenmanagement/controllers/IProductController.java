@@ -13,8 +13,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "UI Product Controllers", description = "Endpoints for managing products")
@@ -32,7 +34,7 @@ public interface IProductController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = ErrorDto.class))),
     })
-    ResponseEntity<ProductDTOResponse> createPost(@Valid @RequestBody ProductDTORequest request);
+    ResponseEntity<ProductDTOResponse> createPost(@Valid @RequestBody final ProductDTORequest request);
 
     @Operation(summary = "Update Product")
     @ApiResponses(value = {
@@ -48,7 +50,11 @@ public interface IProductController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = ErrorDto.class))),
     })
-    ResponseEntity<ProductDTOResponse> updateProduct( final String id, final ProductDTORequest request);
+    ResponseEntity<ProductDTOResponse> updateProduct(
+            @NotNull(message = "Product ID must not be null")
+            @PathVariable("product-id")
+            final String id,
+            @Valid @RequestBody final ProductDTORequest request);
 
     @Operation(summary = "Get all Products")
     @ApiResponses(value = {
@@ -86,7 +92,7 @@ public interface IProductController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = ErrorDto.class))),
     })
-    ResponseEntity<ProductDTOResponse> getProductByCstegory (
+    ResponseEntity<PageResponse<ProductDTOResponse>> getProductByCategory (
                                                           final ProductCategory category,
                                                           final Pageable pageable);
 
@@ -122,7 +128,9 @@ public interface IProductController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = ErrorDto.class))),
     })
-    ResponseEntity<Void> deleteProduct(final String id);
+    ResponseEntity<Void> deleteProduct(
+            @PathVariable("product-id")
+            final String id);
 
     @Operation(summary = "Apply Discount to Product")
     @ApiResponses(value = {
