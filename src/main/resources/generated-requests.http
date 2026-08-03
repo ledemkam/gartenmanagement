@@ -1,0 +1,47 @@
+###
+POST http://localhost:8181/api/v1/products
+Content-Type: application/json
+
+{
+  "name": "Watering Can",
+  "category": "ACCESSORY",
+  "price": 18.50,
+  "description": "Lightweight watering can for indoor and outdoor plants",
+  "stock": 12
+}
+
+###
+GET http://localhost:8181/api/v1/products/39a1a5d7-2d2a-4fe1-9e1b-c69789d6c0b9
+
+###
+PUT http://localhost:8181/api/v1/products/39a1a5d7-2d2a-4fe1-9e1b-c69789d6c0b9
+Content-Type: application/json
+
+{
+  "name": "THYMN",
+  "category": "PLANT",
+  "price": 20.00,
+  "description": "Tee Tree Plant",
+  "stock": 65
+}
+
+###
+GET localhost:8181/api/v1/products
+
+###
+GET http://localhost:8181/api/v1/products/category/PLANT
+
+###
+PATCH http://localhost:8181/api/v1/products/39a1a5d7-2d2a-4fe1-9e1b-c69789d6c0b9/stock?quantity=50
+
+###
+PATCH http://localhost:8181/api/v1/products/39a1a5d7-2d2a-4fe1-9e1b-c69789d6c0b9/discount?discountPercentage=10.50
+
+###
+GET http://localhost:8181/api/v1/products/search/out-of-stock?page=0&size=10
+
+###
+GET http://localhost:8181/api/v1/products/search/low-stock?threshold=5&page=0&size=10
+
+###
+DELETE http://localhost:8181/api/v1/products/39a1a5d7-2d2a-4fe1-9e1b-c69789d6c0b9
