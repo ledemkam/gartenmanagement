@@ -224,4 +224,40 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.content[0].category", is(ProductCategory.TOOL.name())));
     }
 
+    @Test
+    @DisplayName("Should adjust stock")
+    void should_Adjust_Stock() throws Exception {
+        // Given
+        String productId = "1";
+        ProductDTOResponse updatedProduct = ProductDTOResponse.builder()
+                .id(productId)
+                .name("Produit Stock")
+                .category(ProductCategory.TOOL)
+                .description("Description stock")
+                .price(new BigDecimal("15.00"))
+                .stock(120)
+                .active(true)
+                .creationDate(LocalDateTime.now())
+                .build();
+
+        when(productService.adjustStock(any(), any())).thenReturn(updatedProduct);
+
+        // When & Then
+        mockMvc.perform(patch("/api/v1/products/{id}/stock", productId)
+                        .param("quantity", "20")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(productId)))
+                .andExpect(jsonPath("$.stock", is(120)));
+    }
+
+    @Test
+    @DisplayName("Should delete product")
+    void should_Delete_Product() throws Exception {
+        // When & Then
+        mockMvc.perform(delete("/api/v1/products/{id}", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
 }
