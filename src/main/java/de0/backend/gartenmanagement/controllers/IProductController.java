@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,7 +69,7 @@ public interface IProductController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = ErrorDto.class))),
     })
-    ResponseEntity<PageResponse<ProductDTOResponse>> getAllProducts(final Pageable pageable);
+    ResponseEntity<PageResponse<ProductDTOResponse>> getAllProducts(@ParameterObject final Pageable pageable);
 
     @Operation(summary = "Get Product By Id")
     @ApiResponses(value = {
@@ -94,11 +95,11 @@ public interface IProductController {
     })
     ResponseEntity<PageResponse<ProductDTOResponse>> getProductByCategory (
                                                           final ProductCategory category,
-                                                          final Pageable pageable);
+                                                          @ParameterObject final Pageable pageable);
 
     @Operation(summary = "Adjust Product Stock")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "No Content"),
+            @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request",
                     content = @Content(schema = @Schema(implementation = ErrorDto.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
@@ -161,7 +162,7 @@ public interface IProductController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error",
                     content = @Content(schema = @Schema(implementation = ErrorDto.class))),
     })
-    ResponseEntity<PageResponse<ProductDTOResponse>> getOutOfStockProducts(final Pageable pageable);
+    ResponseEntity<PageResponse<ProductDTOResponse>> getOutOfStockProducts(@ParameterObject final Pageable pageable);
 
     @Operation(summary = "Get Low Stock Products")
     @ApiResponses(value = {
@@ -176,5 +177,5 @@ public interface IProductController {
                     content = @Content(schema = @Schema(implementation = ErrorDto.class))),
     })
     ResponseEntity<PageResponse<ProductDTOResponse>> getLowStockProducts(final Integer threshold,
-                                                                         final Pageable pageable);
+                                                                         @ParameterObject final Pageable pageable);
 }

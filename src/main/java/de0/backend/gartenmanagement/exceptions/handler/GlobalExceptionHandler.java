@@ -15,6 +15,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -117,11 +118,29 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorDto> handleNoResourceFound(
+            NoResourceFoundException ex,
+            HttpServletRequest request) {
+        log.debug("No static resource found: {}", request.getRequestURI());
+        ErrorDto error = new ErrorDto(
+                "Resource not found: " + ex.getResourcePath(),
+                request.getRequestURI(),
+                404,
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorDto> handleException(Exception ex) {
+    public ResponseEntity<ErrorDto> handleException(Exception ex, HttpServletRequest request) {
         log.error("Caught exception", ex);
-        ErrorDto errorDto = new ErrorDto();
-        errorDto.setError("An unknown error occurred");
+        ErrorDto errorDto = new ErrorDto(
+                "An unknown error occurred",
+                request.getRequestURI(),
+                500,
+                LocalDateTime.now()
+        );
         return new ResponseEntity<>(errorDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
