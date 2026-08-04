@@ -187,4 +187,41 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.totalElements", is(1)));
     }
 
+    @Test
+    @DisplayName("Should get products by category")
+    void should_Get_Products_By_Category() throws Exception {
+        // Given
+        ProductDTOResponse product = ProductDTOResponse.builder()
+                .id("1")
+                .name("Produit Categorie")
+                .category(ProductCategory.TOOL)
+                .description("Description categorie")
+                .price(new BigDecimal("30.00"))
+                .stock(9)
+                .active(true)
+                .creationDate(LocalDateTime.now())
+                .build();
+
+        PageResponse<ProductDTOResponse> pageResponse = PageResponse.<ProductDTOResponse>builder()
+                .content(List.of(product))
+                .page(0)
+                .size(10)
+                .totalElements(1)
+                .totalPages(1)
+                .hasNext(false)
+                .hasPrevious(false)
+                .isFirst(true)
+                .isLast(true)
+                .build();
+
+        when(productService.findByCategory(any(), any())).thenReturn(pageResponse);
+
+        // When & Then
+        mockMvc.perform(get("/api/v1/products/category/{category}", ProductCategory.TOOL)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].category", is(ProductCategory.TOOL.name())));
+    }
+
 }
