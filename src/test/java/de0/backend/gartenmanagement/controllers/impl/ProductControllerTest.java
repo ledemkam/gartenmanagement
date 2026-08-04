@@ -1,6 +1,7 @@
 package de0.backend.gartenmanagement.controllers.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de0.backend.gartenmanagement.common.PageResponse;
 import de0.backend.gartenmanagement.dtos.ProductDTORequest;
 import de0.backend.gartenmanagement.dtos.ProductDTOResponse;
 import de0.backend.gartenmanagement.entities.ProductCategory;
@@ -16,7 +17,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -106,4 +110,43 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.stock", is(100)))
                 .andExpect(jsonPath("$.active", is(true)));
     }
+
+    @Test
+    @DisplayName("Should update a product")
+    void should_Update_Product() throws Exception {
+        // Given
+        String productId = "1";
+        ProductDTORequest updateDto = ProductDTORequest.builder()
+                .name("Produit MAJ")
+                .category(ProductCategory.TOOL)
+                .description("Description mise a jour")
+                .price(new BigDecimal("19.99"))
+                .stock(80)
+                .build();
+
+        ProductDTOResponse updatedProduct = ProductDTOResponse.builder()
+                .id(productId)
+                .name("Produit MAJ")
+                .category(ProductCategory.TOOL)
+                .description("Description mise a jour")
+                .price(new BigDecimal("19.99"))
+                .stock(80)
+                .active(true)
+                .creationDate(LocalDateTime.now())
+                .build();
+
+        when(productService.update(any(), any())).thenReturn(updatedProduct);
+
+        // When & Then
+        mockMvc.perform(put("/api/v1/products/{id}", productId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateDto)))
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.id", is(productId)))
+                .andExpect(jsonPath("$.name", is("Produit MAJ")))
+                .andExpect(jsonPath("$.stock", is(80)));
+    }
+
+
+
 }
