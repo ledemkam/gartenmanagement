@@ -147,6 +147,44 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.stock", is(80)));
     }
 
+    @Test
+    @DisplayName("Should get all products")
+    void should_Get_All_Products() throws Exception {
+        // Given
+        ProductDTOResponse product = ProductDTOResponse.builder()
+                .id("1")
+                .name("Produit A")
+                .category(ProductCategory.TOOL)
+                .description("Description A")
+                .price(new BigDecimal("10.00"))
+                .stock(12)
+                .active(true)
+                .creationDate(LocalDateTime.now())
+                .build();
 
+        PageResponse<ProductDTOResponse> pageResponse = PageResponse.<ProductDTOResponse>builder()
+                .content(List.of(product))
+                .page(0)
+                .size(10)
+                .totalElements(1)
+                .totalPages(1)
+                .hasNext(false)
+                .hasPrevious(false)
+                .isFirst(true)
+                .isLast(true)
+                .build();
+
+        when(productService.findAll(any())).thenReturn(pageResponse);
+
+        // When & Then
+        mockMvc.perform(get("/api/v1/products")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].id", is("1")))
+                .andExpect(jsonPath("$.page", is(0)))
+                .andExpect(jsonPath("$.size", is(10)))
+                .andExpect(jsonPath("$.totalElements", is(1)));
+    }
 
 }
