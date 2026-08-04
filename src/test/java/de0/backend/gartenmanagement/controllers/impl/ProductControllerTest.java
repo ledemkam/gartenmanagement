@@ -77,4 +77,33 @@ class ProductControllerTest {
           .andExpect(jsonPath("$.name", is("Nouveau Produit")));
 
     }
+
+    @Test
+    @DisplayName("Should get Product by Id")
+    void should_get_Product_By_Id() throws Exception {
+        // Given
+        String productId = "1";
+        ProductDTOResponse existingProduct = ProductDTOResponse.builder()
+                .id(productId)
+                .name("Nouveau Produit")
+                .category(ProductCategory.TOOL)
+                .description("Description du produit")
+                .price(new BigDecimal("25.00"))
+                .stock(100)
+                .active(true)
+                .build();
+
+        when(productService.findById(productId)).thenReturn(existingProduct);
+
+        // When & Then
+        mockMvc.perform(get("/api/v1/products/{id}", productId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(productId)))
+                .andExpect(jsonPath("$.name", is("Nouveau Produit")))
+                .andExpect(jsonPath("$.category", is(ProductCategory.TOOL.name())))
+                .andExpect(jsonPath("$.description", is("Description du produit")))
+                .andExpect(jsonPath("$.stock", is(100)))
+                .andExpect(jsonPath("$.active", is(true)));
+    }
 }
