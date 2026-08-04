@@ -260,4 +260,106 @@ class ProductControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    @Test
+    @DisplayName("Should apply discount")
+    void should_Apply_Discount() throws Exception {
+        // Given
+        String productId = "1";
+        ProductDTOResponse discountedProduct = ProductDTOResponse.builder()
+                .id(productId)
+                .name("Produit Remise")
+                .category(ProductCategory.TOOL)
+                .description("Description remise")
+                .price(new BigDecimal("18.00"))
+                .stock(40)
+                .active(true)
+                .creationDate(LocalDateTime.now())
+                .build();
+
+        when(productService.applyDiscount(any(), any())).thenReturn(discountedProduct);
+
+        // When & Then
+        mockMvc.perform(patch("/api/v1/products/{id}/discount", productId)
+                        .param("discountPercentage", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(productId)))
+                .andExpect(jsonPath("$.price", is(18.00)));
+    }
+
+    @Test
+    @DisplayName("Should get out of stock products")
+    void should_Get_Out_Of_Stock_Products() throws Exception {
+        // Given
+        ProductDTOResponse product = ProductDTOResponse.builder()
+                .id("2")
+                .name("Produit Rupture")
+                .category(ProductCategory.TOOL)
+                .description("Description rupture")
+                .price(new BigDecimal("12.00"))
+                .stock(0)
+                .active(true)
+                .creationDate(LocalDateTime.now())
+                .build();
+
+        PageResponse<ProductDTOResponse> pageResponse = PageResponse.<ProductDTOResponse>builder()
+                .content(List.of(product))
+                .page(0)
+                .size(10)
+                .totalElements(1)
+                .totalPages(1)
+                .hasNext(false)
+                .hasPrevious(false)
+                .isFirst(true)
+                .isLast(true)
+                .build();
+
+        when(productService.getOutOfStockProducts(any())).thenReturn(pageResponse);
+
+        // When & Then
+        mockMvc.perform(get("/api/v1/products/search/out-of-stock")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].stock", is(0)));
+    }
+
+    @Test
+    @DisplayName("Should get low stock products")
+    void should_Get_Low_Stock_Products() throws Exception {
+        // Given
+        ProductDTOResponse product = ProductDTOResponse.builder()
+                .id("3")
+                .name("Produit Stock Bas")
+                .category(ProductCategory.TOOL)
+                .description("Description stock bas")
+                .price(new BigDecimal("9.50"))
+                .stock(4)
+                .active(true)
+                .creationDate(LocalDateTime.now())
+                .build();
+
+        PageResponse<ProductDTOResponse> pageResponse = PageResponse.<ProductDTOResponse>builder()
+                .content(List.of(product))
+                .page(0)
+                .size(10)
+                .totalElements(1)
+                .totalPages(1)
+                .hasNext(false)
+                .hasPrevious(false)
+                .isFirst(true)
+                .isLast(true)
+                .build();
+
+        when(productService.getLowStockProducts(any(), any())).thenReturn(pageResponse);
+
+        // When & Then
+        mockMvc.perform(get("/api/v1/products/search/low-stock")
+                        .param("threshold", "5")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(1)))
+                .andExpect(jsonPath("$.content[0].stock", is(4)));
+    }
+
 }
