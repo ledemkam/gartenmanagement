@@ -1,6 +1,9 @@
 spring:
   application:
     name: gartenmanagement_it
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
 
   # Keep schema ownership in Flyway migrations for integration tests.
   jpa:
@@ -17,3 +20,18 @@ logging:
     org.springframework.test: INFO
     org.flywaydb: INFO
 
+# Configuration for application-specific properties
+app:
+  business:
+    name: Garten Pro
+    contact-email: kontakt@gartemnt.de
+    phone: "0123456789"
+    address: "Gartenstrasse 123, D - 75000 MusterStat"
+  stock:
+    low-stock-threshold: 10
+    reorder-delay-days: 7
+    auto-reorder: true
+  pricing:
+    default-tax-rate: 20.0
+    max-discount-rate: 30.0
+    currency: EUR

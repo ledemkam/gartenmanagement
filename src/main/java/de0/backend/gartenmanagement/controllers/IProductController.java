@@ -52,7 +52,7 @@ public interface IProductController {
                     content = @Content(schema = @Schema(implementation = ErrorDto.class))),
     })
     ResponseEntity<ProductDTOResponse> updateProduct(
-            @NotNull(message = "Product ID must not be null")
+            @NotNull(message = "{product.id.not-null}")
             @PathVariable("product-id")
             final String id,
             @Valid @RequestBody final ProductDTORequest request);

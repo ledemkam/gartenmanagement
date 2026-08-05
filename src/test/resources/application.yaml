@@ -1,6 +1,9 @@
 spring:
   application:
     name: gartenmanagement_test
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
 
   main:
     allow-bean-definition-overriding: true
@@ -46,3 +49,19 @@ management:
   endpoints:
     access:
       default: none
+
+# Configuration for application-specific properties
+app:
+  business:
+    name: Garten Pro
+    contact-email: kontakt@gartemnt.de
+    phone: "0123456789"
+    address: "Gartenstrasse 123, D - 75000 MusterStat"
+  stock:
+    low-stock-threshold: 10
+    reorder-delay-days: 7
+    auto-reorder: true
+  pricing:
+    default-tax-rate: 20.0
+    max-discount-rate: 30.0
+    currency: EUR
