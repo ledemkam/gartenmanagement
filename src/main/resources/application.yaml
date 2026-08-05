@@ -94,4 +94,21 @@ springdoc:
     operations-sorter: method
     tags-sorter: alpha
 
+# Configuration for application-specific properties
+app:
+  business:
+    name: Garten Pro
+    contact-email: kontakt@gartemnt.de
+    phone: "0123456789"
+    address: "Gartenstrasse 123, D - 75000 MusterStat"
+  stock:
+    low-stock-threshold: 10
+    reorder-delay-days: 7
+    auto-reorder: true
+  pricing:
+    default-tax-rate: 20.0
+    max-discount-rate: 50.0
+    currency: EUR
+
+
 
