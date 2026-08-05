@@ -13,12 +13,13 @@ import java.util.List;
 
 public interface ProductService extends CrudServices<ProductDTORequest, ProductDTOResponse,String> {
 
-	PageResponse<ProductDTOResponse> findByCategory(ProductCategory category, Pageable pageable);
-	ProductDTOResponse adjustStock(String id, Integer quantity);
+	PageResponse<ProductDTOResponse> findByCategory(final ProductCategory category,final  Pageable pageable);
+	ProductDTOResponse adjustStock(final String id, final Integer quantity);
 
-	ProductDTOResponse applyDiscount(String id, BigDecimal discountPercentage);
+	ProductDTOResponse applyDiscount(final String id, final BigDecimal discountPercentage);
 
-	PageResponse<ProductDTOResponse> getOutOfStockProducts(Pageable pageable);
-	PageResponse<ProductDTOResponse> getLowStockProducts(Integer threshold,Pageable pageable);
+	PageResponse<ProductDTOResponse> getOutOfStockProducts(final Pageable pageable);
+
+	PageResponse<ProductDTOResponse> getLowStockProducts(final Integer threshold, final Pageable pageable);
 
 }
