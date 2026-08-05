@@ -9,6 +9,9 @@ spring:
       - development
   cache:
     type: simple
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
 
   datasource:
     url: ${DB_URL}
@@ -107,7 +110,7 @@ app:
     auto-reorder: true
   pricing:
     default-tax-rate: 20.0
-    max-discount-rate: 50.0
+    max-discount-rate: 30.0
     currency: EUR
 
 

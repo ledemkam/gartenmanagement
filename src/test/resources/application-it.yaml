@@ -1,6 +1,9 @@
 spring:
   application:
     name: gartenmanagement_it
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
 
   # Keep schema ownership in Flyway migrations for integration tests.
   jpa:
@@ -30,5 +33,5 @@ app:
     auto-reorder: true
   pricing:
     default-tax-rate: 20.0
-    max-discount-rate: 50.0
+    max-discount-rate: 30.0
     currency: EUR
