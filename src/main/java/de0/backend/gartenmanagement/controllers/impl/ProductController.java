@@ -53,7 +53,7 @@ public class ProductController implements IProductController {
     @Override
     @PutMapping(path = "/{product-id}")
     public ResponseEntity<ProductDTOResponse> updateProduct(
-                    @NotNull(message = "Product ID must not be null")
+                    @NotNull(message = "{product.id.not-null}")
                     @PathVariable("product-id")
                     final String id,
                     @Valid

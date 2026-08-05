@@ -21,13 +21,13 @@ public class ApplicationProperties {
     @Getter
     @Setter
     public static class Business {
-        @NotBlank(message = "The company name cannot be empty")
+        @NotBlank(message = "{app.business.name.not-blank}")
         private String name = "Garten Pro";
 
-        @Email(message = "Invalid email")
+        @Email(message = "{app.business.contact-email.invalid}")
         private String contactEmail = "kontakt@gartemnt.de";
 
-        @Pattern(regexp = "\\d{10}", message = "The phone number must contain 10 digits")
+        @Pattern(regexp = "\\d{10}", message = "{app.business.phone.pattern}")
         private String phone = "0123456789";
 
         private String address = "Gartenstraße 123, D - 75000 MusterStat";
@@ -36,11 +36,11 @@ public class ApplicationProperties {
     @Getter
     @Setter
     public static class Stock {
-        @Min(value = 1, message = "The minimum threshold must be at least 1")
-        @Max(value = 100, message = "The maximum threshold cannot exceed 100")
+        @Min(value = 1, message = "{app.stock.low-threshold.min}")
+        @Max(value = 100, message = "{app.stock.low-threshold.max}")
         private Integer lowStockThreshold = 10;
 
-        @Min(value = 1, message = "The reorder delay must be at least 1 day")
+        @Min(value = 1, message = "{app.stock.reorder-delay.min}")
         private Integer reorderDelayDays = 7;
 
         private Boolean autoReorder = false;
@@ -49,12 +49,12 @@ public class ApplicationProperties {
     @Getter
     @Setter
     public static class Pricing {
-        @DecimalMin(value = "0.0", message = "VAT cannot be negative")
-        @DecimalMax(value = "100.0", message = "VAT cannot exceed 100%")
+        @DecimalMin(value = "0.0", message = "{app.pricing.default-tax.min}")
+        @DecimalMax(value = "100.0", message = "{app.pricing.default-tax.max}")
         private BigDecimal defaultTaxRate = new BigDecimal("20.0");
 
-        @DecimalMin(value = "0.0", message = "The maximum discount cannot be negative")
-        @DecimalMax(value = "50.0", message = "The maximum discount cannot exceed 50%")
+        @DecimalMin(value = "0.0", message = "{app.pricing.max-discount.min}")
+        @DecimalMax(value = "50.0", message = "{app.pricing.max-discount.max}")
         private BigDecimal maxDiscountRate = new BigDecimal("30.0");
 
         private String currency = "EUR";
